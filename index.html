@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+      #demo{
+          border-left: 1px solid green;
+          border-top:1px solid green;
+          width:260px;
+          display: none;
+      }
+      .clearfix{
+          *zoom:1;
+      }
+      .clearfix:after{
+          display: block;
+          content:"";
+          clear:both;
+          visibility: hidden;
+      }
+      #demo div{
+          float:left;
+          width:25px;
+          height: 25px;
+          border:1px solid green;
+          background:pink;
+          border-left:none;
+          border-top:none;
+          text-align: center;
+          line-height: 25px;
+      }
+    </style>
+</head>
+<body>
+    <div id="demo" class="clearfix">
+
+    </div>
+    <script>
+    window.onload = ()=>{
+        let str = '';
+        for(var i=1;i<=10;i++){
+            for(j=1;j<=10;j++){
+                str += '<div'+' id='+('a_'+i+'_'+j)+' mynum='+i*j+'></div>';
+            }
+        }
+        document.querySelector('#demo').innerHTML = str;
+        function generateNum(){
+            let num = Math.floor(Math.random()*100);
+            if(!arguments.callee.myarr){
+                arguments.callee.myarr = [];
+            }else{
+                while(arguments.callee.myarr.includes(num)){
+                    num = Math.floor(Math.random()*100);
+                }
+            }
+            arguments.callee.myarr.push(num);
+            return num;
+        }
+
+        let arr = [generateNum(),generateNum(),generateNum(),generateNum(),generateNum()];
+        setTimeout(function(){
+            var list = document.querySelectorAll('#demo div');
+            // for(var i=0;i<list.length;i++){
+                
+            // }
+            for(var i=0;i<arr.length;i++){
+                list[arr[i]].setAttribute('bomb',"1");
+            }
+            function getNum(ele){
+                console.log(ele.id);
+                let arr = ele.id.slice(2).split('_');
+                let x0 = arr[0]-0;//7
+                let y0 = arr[1]-0;//6
+                console.log(x0,y0);
+                return [{x:x0,y:y0-1},{x:x0-1,y:y0+1},{x:x0-1,y:y0-1},{x:x0+1,y:y0},{x:x0,y:y0+1},{x:x0+1,y:y0-1},{x:x0-1,y:y0},{x:x0+1,y:y0+1}];
+            }
+
+            for(var i=0;i<list.length;i++){
+                if(arr.includes(list[i].getAttribute('mynum')-0))continue;
+                // console.log(getNum(list[i]));
+                let myarr = getNum(list[i]);
+                let myNum = 0;
+                console.log(myarr)
+                // return;
+                for(var j=0;j<myarr.length;j++){
+                    if(myarr[j].x === 0 || myarr[j].x === 11 || myarr[j].y=== 0 || myarr[j].y === 11)break;
+                    let tempId = myarr[j].x + '_' + myarr[j].y;
+                    console.log(document.querySelector('#a_'+tempId).getAttribute('bomb'));
+                    // return;
+                    if(document.querySelector('#a_'+tempId).getAttribute('bomb')==='1')myNum++;
+                }
+                list[i].setAttribute('mynum1',myNum);
+                document.querySelector('#demo').style.display = 'block';
+                list[i].onclick = function(){
+                    if(this.getAttribute('bomb')==="1"){
+                        alert('游戏失败');
+                        location.reload();
+                    }else{
+                        this.innerHTML = this.getAttribute('mynum1');
+                    }
+                }
+            }
+        },0);
+    }
+    </script>
+</body>
+</html>
